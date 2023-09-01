@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.scl.ViewTestResultSclDao">
+
+    <resultMap type="com.aaa.entity.scl.ViewTestResultScl" id="ViewTestResultSclMap">
+        <result property="testerId" column="tester_id" jdbcType="INTEGER"/>
+        <result property="body" column="body" jdbcType="NUMERIC"/>
+        <result property="force" column="force" jdbcType="NUMERIC"/>
+        <result property="interpersonal" column="interpersonal" jdbcType="NUMERIC"/>
+        <result property="depressed" column="depressed" jdbcType="NUMERIC"/>
+        <result property="anxious" column="anxious" jdbcType="NUMERIC"/>
+        <result property="hostility" column="hostility" jdbcType="NUMERIC"/>
+        <result property="terror" column="terror" jdbcType="NUMERIC"/>
+        <result property="paranoia" column="paranoia" jdbcType="NUMERIC"/>
+        <result property="psychotic" column="psychotic" jdbcType="NUMERIC"/>
+        <result property="sleepDiet" column="sleep_diet" jdbcType="NUMERIC"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="testPlanId" column="test_plan_id" jdbcType="INTEGER"/>
+        <result property="testName" column="testName" jdbcType="INTEGER"/>
+    </resultMap>
+    <!--删除tbl_tester_scl中选中数据-->
+    <delete id="deleteTesterScl">
+        delete
+        from tbl_tester_scl
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--删除tbl_test_result_scl结果表中的数据-->
+    <delete id="deleteResultScl">
+        delete
+        from tbl_test_result_scl
+        where tester_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--查询所有-->
+    <select id="getAll" resultMap="ViewTestResultSclMap">
+        select result.*,plan.test_name as testName from view_test_result_scl as result left join tbl_test_plan_scl as
+        plan on plan.id = result.test_plan_id
+        <where>
+            <if test="testPlanId!='' and testPlanId!= null">
+                and test_plan_id = #{testPlanId}
+            </if>
+            <if test="name!='' and name!= null">
+                and result.name like concat(concat('%',#{name}),'%')
+            </if>
+            <if test="body==1">
+                and body &lt;= 2.43 and `force` &lt;= 3.27 and interpersonal &lt;= 3.46 and depressed &lt;= 3.13 and
+                `anxious` &lt;= 2.82 and hostility &lt;= 3.13 and terror &lt;= 2.52 and `paranoia` &lt;= 3.23 and
+                psychotic &lt;= 2.71 and sleep_diet &lt;= 2.33
+            </if>
+        </where>
+    </select>
+    <select id="getById" resultMap="ViewTestResultSclMap">
+        select *
+        from view_test_result_scl
+        where tester_id = #{testerId}
+    </select>
+    <select id="queryALLPlan" resultMap="ViewTestResultSclMap">
+        select plan.test_name as testName, re.test_plan_id
+        from tbl_test_plan_scl as plan,
+             (select distinct test_plan_id from view_test_result_scl) as re
+        where re.test_plan_id = plan.id
+    </select>
+
+    <select id="getAllException" resultMap="ViewTestResultSclMap">
+       select xxx.* from  (select result.*,plan.test_name as testName from view_test_result_scl as result left join tbl_test_plan_scl as
+        plan on plan.id = result.test_plan_id
+        <where>
+            <if test="testPlanId!='' and testPlanId!= null">
+                and test_plan_id = #{testPlanId}
+            </if>
+            <if test="name!='' and name!= null">
+                and result.name like concat(concat('%',#{name}),'%')
+            </if>
+        </where>) xxx
+        <where>
+            <if test="body==2">
+                or body > 2.43 or `force` > 3.27 or interpersonal > 3.46 or depressed > 3.13 or `anxious` > 2.82 or
+                hostility > 3.13 or terror > 2.52 or `paranoia` > 3.23 or psychotic > 2.71 or sleep_diet > 2.33
+            </if>
+        </where>
+    </select>
+
+</mapper>
+

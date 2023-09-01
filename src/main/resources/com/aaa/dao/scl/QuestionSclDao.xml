@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.scl.QuestionSclDao">
+
+    <resultMap type="com.aaa.entity.scl.QuestionScl" id="QuestionSclMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="question" column="question" jdbcType="VARCHAR"/>
+        <result property="optionA" column="option_a" jdbcType="VARCHAR"/>
+        <result property="optionB" column="option_b" jdbcType="VARCHAR"/>
+        <result property="optionC" column="option_c" jdbcType="VARCHAR"/>
+        <result property="optionD" column="option_d" jdbcType="VARCHAR"/>
+        <result property="optionE" column="option_e" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="QuestionSclMap">
+        select id,
+               question,
+               option_a,
+               option_b,
+               option_c,
+               option_d,
+               option_e,
+               type,
+               status,
+               create_time,
+               create_by,
+               update_time,
+               update_by,
+               flag
+        from tbl_question_scl
+        where id = #{id}
+    </select>
+
+    <!--条件查询-->
+    <select id="getAll" resultMap="QuestionSclMap">
+        select *
+        from tbl_question_scl
+        <where>
+            flag = '1'
+            <if test="createBy!=null and createBy!=''">
+                and create_by like concat(concat('%',#{createBy}),'%')
+            </if>
+            <if test="question!=null and question!=''">
+                and question like concat(concat('%',#{question}),'%')
+            </if>
+        </where>
+
+    </select>
+    <select id="getAllByStatus" resultMap="QuestionSclMap">
+        select *
+        from tbl_question_scl
+        where flag = '1'
+          and status = '1'
+    </select>
+    <select id="querySclQuesName" resultType="java.lang.Integer">
+        select count(*) from tbl_question_scl
+        <where>
+            flag = 1
+            <if test="question != null and question != ''">
+                and question = #{question}
+            </if>
+            <if test="id != null and id != ''">
+                and id !=#{id}
+            </if>
+        </where>
+    </select>
+
+    <!--添加问题-->
+    <insert id="saveQuestionScl">
+        insert into tbl_question_scl(question, option_a, option_b, option_c,
+                                     option_d, option_e, type, status, create_time, create_by)
+        values (#{question}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, #{optionE},
+                #{type}, #{status}, #{createTime}, #{createBy})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="updateQuestionScl">
+        update tbl_question_scl
+        <set>
+            <if test="question != null and question != ''">
+                question = #{question},
+            </if>
+            <if test="optionA != null and optionA != ''">
+                option_a = #{optionA},
+            </if>
+            <if test="optionB != null and optionB != ''">
+                option_b = #{optionB},
+            </if>
+            <if test="optionC != null and optionC != ''">
+                option_c = #{optionC},
+            </if>
+            <if test="optionD != null and optionD != ''">
+                option_d = #{optionD},
+            </if>
+            <if test="optionE != null and optionE != ''">
+                option_e = #{optionE},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update tbl_question_scl
+        set flag = '0'
+        where id = #{id}
+    </delete>
+    <!--支持批量删除-->
+    <delete id="deleteQuestionScl">
+        update tbl_question_scl
+        set flag = '0'
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
+

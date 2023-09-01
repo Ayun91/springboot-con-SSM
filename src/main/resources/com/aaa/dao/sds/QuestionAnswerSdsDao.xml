@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.sds.QuestionAnswerSdsDao">
+
+    <resultMap type="com.aaa.entity.sds.QuestionAnswerSds" id="QuestionAnswerSdsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="question" column="question" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="result" column="result" jdbcType="VARCHAR"/>
+        <result property="answer" column="answer" jdbcType="VARCHAR"/>
+        <result property="testerId" column="tester_id" jdbcType="INTEGER"/>
+        <result property="dictionaryName" column="dictionary_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="QuestionAnswerSdsMap">
+        select
+          id, question, type, result, answer, tester_id, dictionary_name
+        from view_question_answer_sds
+        where  tester_id = #{id}
+    </select>
+
+</mapper>
+

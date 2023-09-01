@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.sas.QuestionSasDao">
+
+    <resultMap type="com.aaa.entity.sas.QuestionSas" id="SasMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="question" column="question" jdbcType="VARCHAR"/>
+        <result property="optionA" column="option_a" jdbcType="VARCHAR"/>
+        <result property="optionB" column="option_b" jdbcType="VARCHAR"/>
+        <result property="optionC" column="option_c" jdbcType="VARCHAR"/>
+        <result property="optionD" column="option_d" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="INTEGER"/>
+    </resultMap>
+    <!--查询单个-->
+    <select id="queryById" resultMap="SasMap">
+        select
+          id, question, option_a, option_b, option_c, option_d, type, status, create_time, create_by, update_time, update_by, flag
+        from tbl_question_sas
+        where id = #{id}
+    </select>
+
+
+    <select id="getAll" resultMap="SasMap">
+        select *
+        from tbl_question_sas
+        <where>
+            <if test="question!=null and question!=''">
+                and question like  concat(concat('%',#{question}),'%')
+            </if>
+            <if test="createBy!=null and createBy!=''">
+                and create_by like  concat(concat('%',#{createBy}),'%')
+            </if>
+        </where>
+
+    </select>
+
+    <insert id="insert">
+        insert into tbl_question_sas(question, option_a, option_b, option_c, option_d, type, status, create_time, create_by)
+        values (#{question}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, #{type}, #{status}, #{createTime}, #{createBy})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tbl_question_sas
+        <set>
+            <if test="question != null and question != ''">
+                question = #{question},
+            </if>
+            <if test="optionA != null and optionA != ''">
+                option_a = #{optionA},
+            </if>
+            <if test="optionB != null and optionB != ''">
+                option_b = #{optionB},
+            </if>
+            <if test="optionC != null and optionC != ''">
+                option_c = #{optionC},
+            </if>
+            <if test="optionD != null and optionD != ''">
+                option_d = #{optionD},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="flag != null">
+                flag = #{flag},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+
+    <delete id="deleteByIds">
+        delete
+        from tbl_question_sas
+        where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="getAllByStatus" resultMap="SasMap">
+        SELECT
+            *
+        FROM
+            tbl_question_sas
+        WHERE
+            flag = '1'
+          AND STATUS = '1'
+    </select>
+    <select id="repetitionName" resultMap="SasMap">
+        select * from tbl_question_sas where question = #{question}
+    </select>
+</mapper>
+

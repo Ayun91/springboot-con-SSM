@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.fpa.TesterFpaDao">
+
+    <resultMap type="com.aaa.entity.fpa.TesterFpa" id="TesterFpaMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="testPlanId" column="test_plan_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TesterFpaMap">
+        select
+          id, name, phone, create_time, test_plan_id
+        from tbl_tester_fpa
+        where id = #{id}
+    </select>
+    <select id="getTesterFpaByPhone" resultMap="TesterFpaMap">
+        select *
+        from tbl_tester_fpa where
+        phone = #{phone}
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_tester_fpa(name, phone, create_time, test_plan_id)
+        values (#{name}, #{phone}, #{createTime}, #{testPlanId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_tester_fpa(name, phone, create_time, test_plan_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.name}, #{entity.phone}, #{entity.createTime}, #{entity.testPlanId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_tester_fpa(name, phone, create_time, test_plan_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.phone}, #{entity.createTime}, #{entity.testPlanId})
+        </foreach>
+        on duplicate key update
+        name = values(name),
+        phone = values(phone),
+        create_time = values(create_time),
+        test_plan_id = values(test_plan_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tbl_tester_fpa
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="testPlanId != null">
+                test_plan_id = #{testPlanId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tbl_tester_fpa where id = #{id}
+    </delete>
+
+</mapper>

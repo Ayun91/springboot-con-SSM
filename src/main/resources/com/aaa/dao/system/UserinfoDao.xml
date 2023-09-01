@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.system.UserinfoDao">
+
+    <resultMap id="UserinfoMap" type="com.aaa.entity.system.UserinfoVo">
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+    <resultMap id="menuResult" type="com.aaa.entity.system.Menu">
+        <id property="menuId" column="menu_id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="url" column="url"/>
+        <result property="menuType" column="menu_type"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <insert id="insertRoleUser">
+        insert into tbl_user_role (user_id, role_id)
+        values (#{userid}, #{roleid})
+    </insert>
+    <update id="updateRoleUser">
+        update tbl_user_role
+            set role_id = #{roleid}
+        where user_id = #{userid}
+    </update>
+    <delete id="deleteById">
+        delete from userinfo where userid = #{userid}
+    </delete>
+    <insert id="save" keyProperty="userid" useGeneratedKeys="true">
+        insert into userinfo (username, password, salt, deptid,
+                     avatar, email, phonenumber, sex, remark, create_by,
+                     create_time, update_by, update_time, role_id)
+        values (#{username}, #{password}, #{salt}, #{deptid}, #{avatar},
+                #{email}, #{phonenumber}, #{sex}, #{remark}, #{createBy},
+                  #{createTime}, #{updateBy}, #{updateTime}, #{roleId});
+    </insert>
+    <update id="update">
+        update userinfo
+        <set>
+            <if test="username!='' and username!=null">
+                username = #{username},
+            </if>
+            <if test="deptid!='' and deptid!=null">
+                deptid = #{deptid},
+            </if>
+            <if test="email!='' and email!=null">
+                email = #{email},
+            </if>
+            <if test="phonenumber!='' and phonenumber!=null">
+                phonenumber = #{phonenumber},
+            </if>
+            <if test="sex!='' and sex!=null">
+                sex = #{sex},
+            </if>
+            <if test="status!='' and status!=null">
+                status = #{status},
+            </if>
+            <if test="remark!='' and remark!=null">
+                remark = #{remark},
+            </if>
+            <if test="roleId!='' and roleId!=null">
+                role_id = #{roleId},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy}
+            </if>
+        </set>
+        where userid = #{userid};
+    </update>
+
+
+    <update id="updatePwd">
+        update userinfo
+        <set>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="salt != null and salt != ''">
+                salt = #{salt},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy}
+            </if>
+        </set>
+        where userid = #{userid}
+    </update>
+
+
+    <update id="delete">
+        update userinfo
+        set del_flag = '0'
+        where userid in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+    <select id="getById" resultType="com.aaa.entity.system.Userinfo">
+        select *
+        from userinfo
+        where userid = #{userid}
+          and del_flag = '1';
+    </select>
+    <select id="getUserByUsername" resultType="com.aaa.entity.system.Userinfo">
+        select *
+        from userinfo
+        where username = #{username}
+          and del_flag = '1';
+    </select>
+    <select id="getMenuByUserName" resultMap="menuResult">
+        select *
+        from tbl_menu
+        where menu_id in (select menu_id
+                          from tbl_role_menu
+                          where role_id in (select role_id
+                                            from tbl_user_role
+                                            where user_id = (select userid
+                                                             from userinfo
+                                                             where username = #{username}
+                                                               and del_flag = '1'))
+        )
+        ORDER BY order_num ASC
+    </select>
+    <select id="getAll" resultMap="UserinfoMap">
+        select user.*, d.dept_name deptName from userinfo user ,tbl_dept d where user.deptid = d.dept_id and
+        user.del_flag = '1'
+        <if test="username!=null and username!=''">
+            and user.username like concat(concat('%',#{username}),'%')
+        </if>
+        <if test="deptid!=null and deptid!=''">
+            and user.deptid = #{deptid}
+        </if>
+    </select>
+    <select id="getByRoleId" resultType="com.aaa.entity.system.Userinfo">
+        select *
+        from userinfo
+        where role_id = #{id} and del_flag = '1'
+    </select>
+    <select id="getByDeptId" resultType="com.aaa.entity.system.Userinfo">
+        select *
+        from userinfo
+        where
+        deptid in
+        <foreach collection="ids" item="id" separator="," close=")" open="(">
+            #{id}
+        </foreach>
+    </select>
+    <select id="repetitionName" resultType="com.aaa.entity.system.Userinfo">
+        select *
+        from userinfo where username = #{userName}
+                        and del_flag = '1';
+    </select>
+    <select id="queryAll" resultType="com.aaa.entity.system.Userinfo">
+        select * from userinfo
+    </select>
+    <select id="queryAllByPageAndLimit" resultType="com.aaa.entity.system.Userinfo">
+        select * from userinfo
+        limit #{page},#{limit}
+    </select>
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.mht.ViewTestResultMhtDao">
+
+    <resultMap id="BaseResultMap" type="com.aaa.entity.mht.ViewTestResultMht">
+        <!--@Table view_test_result_mht-->
+        <result property="testerId" column="tester_id" jdbcType="INTEGER"/>
+        <result property="effect" column="effect" jdbcType="VARCHAR"/>
+        <result property="learnAnxiety" column="learn_anxiety" jdbcType="VARCHAR"/>
+        <result property="person" column="person" jdbcType="VARCHAR"/>
+        <result property="lonely" column="lonely" jdbcType="VARCHAR"/>
+        <result property="blame" column="blame" jdbcType="VARCHAR"/>
+        <result property="allergy" column="allergy" jdbcType="VARCHAR"/>
+        <result property="body" column="body" jdbcType="VARCHAR"/>
+        <result property="terror" column="terror" jdbcType="VARCHAR"/>
+        <result property="impulse" column="impulse" jdbcType="VARCHAR"/>
+        <result property="allscore" column="allScore" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="testName" column="test_name" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="testPlanId" column="test_plan_id" jdbcType="INTEGER"/>
+    </resultMap>
+    <delete id="deleteResultMht">
+    delete from tbl_tester_mht
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteTesterMht">
+        delete  from tbl_test_result_mht
+          where tester_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="getAll" resultMap="BaseResultMap">
+        select mht.*,test_name
+        from view_test_result_mht mht
+            left join tbl_test_plan_mht ttm on mht.test_plan_id = ttm.id
+            <where>
+             <if test="testPlanId!='' and testPlanId!= null">
+                 and   test_plan_id = #{testPlanId}
+             </if>
+                <if test="name!='' and name!= null">
+                   and name like concat(concat('%',#{name}),'%')
+                </if>
+            </where>
+
+    </select>
+    <select id="getById" resultMap="BaseResultMap">
+        select * from view_test_result_mht where tester_id =#{testerId}
+    </select>
+
+    <select id="getByTesterId" resultType="java.util.Map">
+        select * from view_question_answer_mht where tester_id = #{testerId}
+    </select>
+    <select id="getPersonality" resultType="java.util.Map">
+            select count(*)  total
+                 ,count(if(learn_anxiety > 8, 1, null)) learnAnxiety
+                 ,count(if(person > 8, 1, null)) person
+                 ,count(if(lonely > 8, 1, null)) lonely
+                 ,count(if(blame > 8, 1, null)) blame
+                 ,count(if(allergy > 8, 1, null)) allergy
+                 ,count(if(body > 8, 1, null)) body
+                 ,count(if(terror > 8, 1, null)) terror
+                 ,count(if(impulse > 8, 1, null)) impulse
+                 ,count(if(effect > 8, 1, null)) effect
+            from view_test_result_mht
+    </select>
+    <select id="getPlanId" resultType="java.util.Map">
+        select id,test_name from tbl_test_plan_mht where flag = '1'
+    </select>
+    <select id="getNormalStudent" resultMap="BaseResultMap">
+        select mht.*,test_name
+        from view_test_result_mht mht
+        left join tbl_test_plan_mht ttm on mht.test_plan_id = ttm.id
+        <where>
+            65 >= allScore and  status = '1'
+            <if test="testPlanId!='' and testPlanId!= null">
+                and   test_plan_id = #{testPlanId}
+            </if>
+            <if test="name!='' and name!= null">
+                and name like concat(concat('%',#{name}),'%')
+            </if>
+        </where>
+    </select>
+    <select id="getAbnormalStudent" resultMap="BaseResultMap">
+        select mht.*,test_name
+        from view_test_result_mht mht
+        left join tbl_test_plan_mht ttm on mht.test_plan_id = ttm.id
+        <where>
+            allScore > 65 and  status = '1'
+            <if test="testPlanId!='' and testPlanId!= null">
+                and   test_plan_id = #{testPlanId}
+            </if>
+            <if test="name!='' and name!= null">
+                and name like concat(concat('%',#{name}),'%')
+            </if>
+        </where>
+    </select>
+    <select id="getInvalidStudent" resultMap="BaseResultMap">
+        select mht.*,test_name
+        from view_test_result_mht mht
+        left join tbl_test_plan_mht ttm on mht.test_plan_id = ttm.id
+        <where>
+            status = '0'
+            <if test="testPlanId!='' and testPlanId!= null">
+                and   test_plan_id = #{testPlanId}
+            </if>
+            <if test="name!='' and name!= null">
+                and name like concat(concat('%',#{name}),'%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

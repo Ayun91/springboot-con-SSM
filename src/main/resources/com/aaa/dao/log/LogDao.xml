@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.log.LogDao">
+
+    <resultMap type="com.aaa.entity.log.Logger" id="LogMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="loginName" column="login_name" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="className" column="class_name" jdbcType="VARCHAR"/>
+        <result property="methodName" column="method_name" jdbcType="VARCHAR"/>
+        <result property="params" column="params" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="result" column="result" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="LogMap">
+        select
+          id, login_name, user_name, ip, class_name, method_name, params, create_time, result
+        from tbl_log
+        where id = #{id}
+    </select>
+
+    <!--条件查询-->
+    <select id="getALl" resultMap="LogMap">
+        select *
+        from tbl_log
+        <where>
+            <if test="loginName!=null and loginName!=''">
+                and  login_name like concat(concat('%',#{loginName}),'%')
+            </if>
+            <if test="methodName!=null and methodName!=''">
+                and  method_name like concat(concat('%',#{methodName}),'%')
+            </if>
+            <if test="className!=null and className!=''">
+                and  class_name like concat(concat('%',#{className}),'%')
+            </if>
+        </where>
+    </select>
+
+    <!--添加日志-->
+    <insert id="insertLog">
+        insert into tbl_log (login_name, user_name, ip, class_name, method_name, params, create_time, result)
+        values (#{loginName},#{userName},#{ip},#{className},#{methodName},#{params},#{createTime},#{result});
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tbl_log where id = #{id}
+    </delete>
+
+</mapper>
+

@@ -1,0 +1,20 @@
+oss:
+    accessKeyId: LTAI5tRzFqZBPVSax8H8jbxM
+    accessKeySecret: qCroDJBRBDvJEf6IPLuBR9UBpqkAAR
+    bucketName: ayuns
+    endpoint: oss-cn-beijing-internal.aliyuncs.com
+socket:
+    ip: 192.168.41.210
+server:
+    port: 9093
+spring:
+    datasource:
+        druid:
+            driver-class-name: com.mysql.cj.jdbc.Driver
+            password: 123456
+            url: jdbc:mysql://localhost:3306/lanyun_bi?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+            username: root
+    mvc:
+        view:
+            prefix: /views/
+            suffix: .jsp

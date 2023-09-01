@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.sds.TblQuestionSdsDao">
+
+    <resultMap id="BaseResultMap" type="com.aaa.entity.sds.QuestionSds">
+        <!--@Table tbl_question_sds-->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="question" column="question" jdbcType="VARCHAR"/>
+        <result property="optionA" column="option_a" jdbcType="VARCHAR"/>
+        <result property="optionB" column="option_b" jdbcType="VARCHAR"/>
+        <result property="optionC" column="option_c" jdbcType="VARCHAR"/>
+        <result property="optionD" column="option_d" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          id, question, option_a, option_b, option_c, option_d, type, status, create_time, create_by, update_time, update_by, flag
+        from tbl_question_sds
+        where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+
+
+
+    <!--统计总行数-->
+
+
+    <select id="findAllQuestion" resultMap="BaseResultMap">
+         select  * from tbl_question_sds where status=0 and flag=0
+    </select>
+    <!--查询重名-->
+    <select id="repetitionName" resultType="java.lang.Integer" parameterType="com.aaa.entity.sds.QuestionSds">
+        select count(*) from tbl_question_sds
+        <where>
+            flag = 0
+            <if test="question != null and question != ''">
+                and question = #{question}
+            </if>
+            <if test="id != null and id != ''">
+                and id !=#{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllQuestionByCondition" resultMap="BaseResultMap">
+            select * from tbl_question_sds where flag = 0
+                <if test="question !=null and question!=''">
+                    and question like concat(concat('%',#{question},'%'))
+                </if>
+                <if test="createBy !=null and createBy!=''">
+                    and create_by like concat(concat('%',#{createBy},'%'))
+                </if>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_question_sds(question, option_a, option_b, option_c, option_d, type, status,create_time,create_by,flag)
+        values (#{question}, #{optionA}, #{optionB}, #{optionC}, #{optionD}, ${type}, ${status}, now(),#{createBy},0)
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_question_sds(question, option_a, option_b, option_c, option_d, type, status, create_time,
+        create_by, update_time, update_by, flag)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.question}, #{entity.optionA}, #{entity.optionB}, #{entity.optionC}, #{entity.optionD},
+            #{entity.type}, #{entity.status}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime},
+            #{entity.updateBy}, #{entity.flag})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_question_sds(question, option_a, option_b, option_c, option_d, type, status, create_time,
+        create_by, update_time, update_by, flag)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.question}, #{entity.optionA}, #{entity.optionB}, #{entity.optionC}, #{entity.optionD},
+            #{entity.type}, #{entity.status}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime},
+            #{entity.updateBy}, #{entity.flag})
+        </foreach>
+        on duplicate key update
+        question = values(question),
+        option_a = values(option_a),
+        option_b = values(option_b),
+        option_c = values(option_c),
+        option_d = values(option_d),
+        type = values(type),
+        status = values(status),
+        create_time = values(create_time),
+        create_by = values(create_by),
+        update_time = values(update_time),
+        update_by = values(update_by),
+        flag = values(flag)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tbl_question_sds
+        <set>
+            <if test="question != null and question != ''">
+                question = #{question},
+            </if>
+            <if test="optionA != null and optionA != ''">
+                option_a = #{optionA},
+            </if>
+            <if test="optionB != null and optionB != ''">
+                option_b = #{optionB},
+            </if>
+            <if test="optionC != null and optionC != ''">
+                option_c = #{optionC},
+            </if>
+            <if test="optionD != null and optionD != ''">
+                option_d = #{optionD},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="flag != null">
+                flag = #{flag},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update tbl_question_sds set flag = 1 where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
+

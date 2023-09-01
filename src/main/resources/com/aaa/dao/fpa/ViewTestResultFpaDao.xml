@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.fpa.ViewTestResultFpaDao">
+
+    <resultMap type="com.aaa.entity.fpa.ViewTestResultFpa" id="ViewTestResultFpaMap">
+        <result property="testerId" column="tester_id"/>
+        <result property="redCount" column="red_count"/>
+        <result property="blueCount" column="blue_count"/>
+        <result property="yellowCount" column="yellow_count"/>
+        <result property="greenCount" column="green_count"/>
+        <result property="name" column="NAME"/>
+        <result property="phone" column="phone"/>
+        <result property="createTime" column="create_time"/>
+        <result property="testPlanId" column="test_plan_id"/>
+        <result property="testName" column="test_name"/>
+    </resultMap>
+    <!--删除tbl_tester_fpa中选中数据-->
+    <delete id="deleteTesterFpa">
+        delete
+        from tbl_tester_fpa
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--删除tbl_test_result_fpa结果表中的数据-->
+    <delete id="deleteResultFpa">
+        delete
+        from tbl_test_result_fpa
+        where tester_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="getAll" resultMap="ViewTestResultFpaMap">
+        select *
+        from view_test_result_fpa
+        <where>
+            <if test="testName!='' and testName!= null">
+                and test_name like concat(concat('%',#{testName}),'%')
+            </if>
+            <if test="testPlanId!='' and testPlanId!= null">
+                and test_plan_id = #{testPlanId}
+            </if>
+            <if test="name!='' and name!= null">
+                and name like concat(concat('%',#{name}),'%')
+            </if>
+        </where>
+    </select>
+    <select id="getById" resultMap="ViewTestResultFpaMap">
+        select *
+        from view_test_result_fpa
+        where tester_id = #{testerId}
+    </select>
+    <select id="getResultDiv" resultType="com.aaa.entity.fpa.ResultDiv">
+        select *
+        from tbl_result_div
+        where id = #{id}
+    </select>
+</mapper>
+

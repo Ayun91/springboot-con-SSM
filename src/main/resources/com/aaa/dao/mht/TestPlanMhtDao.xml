@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.mht.TestPlanMhtDao">
+
+    <resultMap id="BaseResultMap" type="com.aaa.entity.mht.TestPlanMht">
+        <!--@Table tbl_test_plan_mht-->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="testName" column="test_name" jdbcType="VARCHAR"/>
+        <result property="testCode" column="test_code" jdbcType="INTEGER"/>
+        <result property="testBegin" column="test_begin" jdbcType="TIMESTAMP"/>
+        <result property="testEnd" column="test_end" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="TINYINT"/>
+    </resultMap>
+    <insert id="insert">
+        insert into tbl_test_plan_mht (test_name, test_code, test_begin, test_end, create_time, create_by, remark)
+        values (#{testName}, #{testCode}, #{testBegin}, #{testEnd}, #{createTime}, #{createBy}, #{remark})
+    </insert>
+    <update id="update">
+        update tbl_test_plan_mht
+        <set>
+            <if test="testName != null and testName != ''">
+                test_name = #{testName},
+            </if>
+            <if test="testCode != null">
+                test_code = #{testCode},
+            </if>
+            <if test="testBegin != null">
+                test_begin = #{testBegin},
+            </if>
+            <if test="testEnd != null">
+                test_end = #{testEnd},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="delete">
+        update tbl_test_plan_mht
+        set flag = '0'
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+
+    </delete>
+
+
+    <select id="getAll" resultMap="BaseResultMap">
+        select * from tbl_test_plan_mht
+        where flag = '1'
+
+        <if test="testName!=null and testName!=''">
+            and test_name like concat(concat("%",#{testName}),"%")
+        </if>
+        <if test="createBy!=null and createBy!=''">
+            and create_by like concat(concat("%",#{createBy}),"%")
+        </if>
+    </select>
+    <select id="getByTestCode" resultType="java.util.List">
+        select *
+        from view_test_plan
+        <where>
+            test_code = #{sixRandom}
+        </where>
+    </select>
+    <select id="getName" resultMap="BaseResultMap">
+        select *
+        from tbl_test_plan_mht
+        where test_name = #{testName} and flag = '1'
+    </select>
+
+</mapper>
+

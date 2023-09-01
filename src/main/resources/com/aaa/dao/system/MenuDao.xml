@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.system.MenuDao">
+
+    <resultMap type="com.aaa.entity.system.Menu" id="MenuMap">
+        <result property="menuId" column="menu_id" jdbcType="INTEGER"/>
+        <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="orderNum" column="order_num" jdbcType="INTEGER"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="menuType" column="menu_type" jdbcType="VARCHAR"/>
+        <result property="visible" column="visible" jdbcType="VARCHAR"/>
+        <result property="perms" column="perms" jdbcType="VARCHAR"/>
+        <result property="icon" column="icon" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--添加菜单-->
+    <insert id="saveMenu">
+        insert into tbl_menu (menu_name, parent_id, order_num, url,
+                              menu_type, perms, create_by, create_time,
+                              update_by,
+                              update_time, remark)
+        values (#{menuName}, #{parentId}, #{orderNum}, #{url}, #{menuType}, #{perms},
+                #{createBy},
+                #{createTime}, #{updateBy}, #{updateTime}, #{remark});
+    </insert>
+    <!--修改菜单-->
+    <update id="updateMenu">
+        update tbl_menu
+        set menu_name   = #{menuName},
+            parent_id   = #{parentId},
+            order_num   =#{orderNum},
+            url=#{url},
+            menu_type   = #{menuType},
+            perms       = #{perms},
+            create_by   = #{createBy},
+            create_time =#{createTime},
+            update_by   = #{updateBy},
+            update_time = #{updateTime},
+            remark      = #{remark}
+        where menu_id = #{menuId}
+    </update>
+    <!--通过Id删除菜单-->
+    <delete id="deleteMenuById">
+        delete
+        from tbl_menu
+        where menu_id = #{menuId}
+    </delete>
+    <!--查询所有-->
+    <select id="getAllMenu" resultMap="MenuMap">
+        select *
+        from tbl_menu
+    </select>
+    <select id="getParentNameById" resultMap="MenuMap">
+        select *
+        from tbl_menu
+        where menu_id = #{menuId}
+    </select>
+
+
+</mapper>
+

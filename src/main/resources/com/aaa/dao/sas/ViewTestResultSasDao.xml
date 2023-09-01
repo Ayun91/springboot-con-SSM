@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.sas.ViewTestResultSasDao">
+
+    <resultMap type="com.aaa.entity.sas.ViewTestResultSas" id="ViewTestResultSasMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="forward" column="forward" jdbcType="INTEGER"/>
+        <result property="inversion" column="inversion" jdbcType="INTEGER"/>
+        <result property="testPlanId" column="test_plan_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="ViewQuestionAnswer" type="com.aaa.entity.ViewQuestionAnswer">
+        <result property="id" column="id"/>
+        <result property="question" column="question"/>
+        <result property="type" column="type"/>
+        <result property="result" column="result"/>
+        <result property="answer" column="answer"/>
+        <result property="testerId" column="tester_id"/>
+        <result property="dictionaryName" column="dictionary_name"/>
+    </resultMap>
+
+    <delete id="deleteTesterSas">
+        delete
+        from tbl_tester_sas
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--删除tbl_test_result_sas结果表中的数据-->
+    <delete id="deleteResultSas">
+        delete
+        from tbl_test_result_sas
+        where tester_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="getAll" resultMap="ViewTestResultSasMap">
+        select vs.*,round((vs.forward+vs.inversion)*1.25) as score,ts.test_name as testName
+        from view_test_result_sas vs
+        left join tbl_test_plan_sas ts on vs.test_plan_id=ts.id
+        <where>
+            and vs.id != ''
+            <if test="testPlanId!='' and testPlanId!= null">
+                and test_plan_id = #{testPlanId}
+            </if>
+            <if test="name!='' and name!= null">
+                and name like concat(concat('%',#{name}),'%')
+            </if>
+        </where>
+    </select>
+    <select id="getById" resultMap="ViewTestResultSasMap">
+        select *
+        from view_test_result_sas
+        where id = #{testerId}
+    </select>
+
+    <select id="getDetailsById" resultMap="ViewQuestionAnswer">
+        select id,question,result,dictionary_name
+        from view_question_answer_sas
+        where tester_id = #{testerId}
+    </select>
+    <select id="getNormalStudent" resultMap="ViewTestResultSasMap">
+        select vs.*,round((vs.forward+vs.inversion)*1.25) as score,ts.test_name as testName
+        from view_test_result_sas vs
+        left join tbl_test_plan_sas ts on vs.test_plan_id=ts.id
+        where (vs.forward+vs.inversion)*1.25 &lt; 50
+        and vs.id != ''
+        <if test="testPlanId!='' and testPlanId!= null">
+           and test_plan_id = #{testPlanId}
+        </if>
+        <if test="name!='' and name!= null">
+           and name like concat(concat('%',#{name}),'%')
+        </if>
+    </select>
+    <select id="getAbnormalStudent" resultMap="ViewTestResultSasMap">
+        select vs.*,round((vs.forward+vs.inversion)*1.25) as score,ts.test_name as testName
+        from view_test_result_sas vs
+        left join tbl_test_plan_sas ts on vs.test_plan_id=ts.id
+        where (vs.forward+vs.inversion)*1.25 >= 50
+        and vs.id != ''
+        <if test="testPlanId!='' and testPlanId!= null">
+            and test_plan_id = #{testPlanId}
+        </if>
+        <if test="name!='' and name!= null">
+            and name like concat(concat('%',#{name}),'%')
+        </if>
+    </select>
+
+</mapper>
+

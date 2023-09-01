@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.mht.TesterMhtDao">
+
+    <resultMap id="BaseResultMap" type="com.aaa.entity.mht.TesterMht">
+        <!--@Table tbl_tester_mht-->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="testPlanId" column="test_plan_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+    <update id="modify">
+        update  tbl_tester_mht set status = #{status} where id=#{id}
+    </update>
+    <select id="queryByPhone" resultMap="BaseResultMap">
+       select * from tbl_tester_mht where phone=#{phone} and status = 1
+    </select>
+    <select id="queryById" resultType="java.lang.Integer">
+        select effect from view_test_result_mht where tester_id = #{id}
+    </select>
+
+
+    <insert id="insertBatch" keyProperty="" useGeneratedKeys="true">
+        insert into tbl_tester_mht(id, name, phone, test_plan_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.id}, #{entity.name}, #{entity.phone}, #{entity.testPlanId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="" useGeneratedKeys="true">
+        insert into tbl_tester_mht(id, name, phone, create_time, test_plan_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id}, #{entity.name}, #{entity.phone}, #{entity.createTime}, #{entity.testPlanId})
+        </foreach>
+        on duplicate key update
+        id = values(id),
+        name = values(name),
+        phone = values(phone),
+        create_time = values(create_time),
+        test_plan_id = values(test_plan_id)
+    </insert>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+          insert into tbl_tester_mht (name, phone, create_time, test_plan_id)
+        values (#{name}, #{phone}, #{createTime}, #{testPlanId})
+    </insert>
+
+    <!--
+    &lt;!&ndash;通过主键修改数据&ndash;&gt;
+    <update id="update">
+        update tbl_tester_mht
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="testPlanId != null">
+                test_plan_id = #{testPlanId},
+            </if>
+        </set>
+        where  = #{}
+    </update>
+    -->
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tbl_tester_mht where  id= #{id}
+    </delete>
+
+</mapper>
+

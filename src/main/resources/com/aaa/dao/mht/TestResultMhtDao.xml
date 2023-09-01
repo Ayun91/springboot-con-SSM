@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.mht.TestResultMhtDao">
+
+    <resultMap id="BaseResultMap" type="com.aaa.entity.mht.TestResultMht">
+        <!--@Table tbl_test_result_mht-->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="testerId" column="tester_id" jdbcType="INTEGER"/>
+        <result property="questionId" column="question_id" jdbcType="INTEGER"/>
+        <result property="answer" column="answer" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_result_mht( tester_id, question_id, answer)
+        values ( #{testerId}, #{questionId}, #{answer})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_result_mht (tester_id, question_id, answer)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        ( #{entity.testerId}, #{entity.questionId}, #{entity.answer})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="" useGeneratedKeys="true">
+        insert into tbl_test_result_mht(id, tester_id, question_id, answer)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id}, #{entity.testerId}, #{entity.questionId}, #{entity.answer})
+        </foreach>
+        on duplicate key update
+        id = values(id),
+        tester_id = values(tester_id),
+        question_id = values(question_id),
+        answer = values(answer)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tbl_test_result_mht
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="testerId != null">
+                tester_id = #{testerId},
+            </if>
+            <if test="questionId != null">
+                question_id = #{questionId},
+            </if>
+            <if test="answer != null and answer != ''">
+                answer = #{answer},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tbl_test_result_mht where  id= #{id}
+    </delete>
+
+    <select id="queryById" resultType="com.aaa.entity.mht.TestResultMht">
+        select * from tbl_test_result_mht
+        where  id=#{id}
+    </select>
+
+</mapper>
+

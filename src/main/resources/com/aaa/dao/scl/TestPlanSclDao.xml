@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.scl.TestPlanSclDao">
+
+    <resultMap type="com.aaa.entity.scl.TestPlanScl" id="TblTestPlanSclMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="testName" column="test_name" jdbcType="VARCHAR"/>
+        <result property="testCode" column="test_code" jdbcType="INTEGER"/>
+        <result property="testBegin" column="test_begin" jdbcType="TIMESTAMP"/>
+        <result property="testEnd" column="test_end" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="TINYINT"/>
+    </resultMap>
+    <insert id="insert">
+        insert into
+            tbl_test_plan_scl (test_name, test_code, test_begin, test_end, create_time, create_by,remark)
+        values
+            (#{testName}, #{testCode}, #{testBegin}, #{testEnd}, #{createTime}, #{createBy},#{remark})
+    </insert>
+
+    <select id="getAll" resultMap="TblTestPlanSclMap">
+        select *
+        from tbl_test_plan_scl
+        where flag = '1'
+            <if test="testName!=null and testName!=''">
+                and test_name like concat(concat("%",#{testName}),"%")
+            </if>
+            <if test="createBy!=null and createBy!=''">
+                and create_by like concat(concat("%",#{createBy}),"%")
+            </if>
+    </select>
+    <select id="getByTestCode" resultType="java.util.List">
+        select *
+        from view_test_plan
+        <where>
+            test_code = #{sixRandom}
+        </where>
+    </select>
+    <select id="queryByName" resultType="java.lang.Integer">
+        select count(*) from tbl_test_plan_scl
+        where flag = '1'
+            <if test="testName != null and testName != ''">
+                and test_name = #{testName}
+            </if>
+            <if test="id != null and id != ''">
+                and id !=#{id}
+            </if>
+
+    </select>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tbl_test_plan_scl
+        <set>
+            <if test="testName != null and testName != ''">
+                test_name = #{testName},
+            </if>
+            <if test="testCode != null">
+                test_code = #{testCode},
+            </if>
+            <if test="testBegin != null">
+                test_begin = #{testBegin},
+            </if>
+            <if test="testEnd != null">
+                test_end = #{testEnd},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update tbl_test_plan_scl
+        set flag = '0'
+        where id = #{id}
+    </delete>
+    <delete id="delete">
+        update tbl_test_plan_scl set flag = '0'
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
+

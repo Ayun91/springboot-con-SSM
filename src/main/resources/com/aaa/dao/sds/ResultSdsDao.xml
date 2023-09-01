@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.sds.ResultSdsDao">
+
+    <resultMap type="com.aaa.entity.ResultSds" id="ResultSdsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="forward" column="forward" jdbcType="VARCHAR"/>
+        <result property="inversion" column="inversion" jdbcType="VARCHAR"/>
+        <result property="testPlanId" column="test_plan_id" jdbcType="INTEGER"/>
+        <result property="testName" column="testName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <delete id="deleteResultSds">
+        delete from tbl_test_result_sds where tester_id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="queryAllSds" resultMap="ResultSdsMap">
+        select result.*,round((result.forward+result.inversion)*1.25) as score,plan.test_name as testName
+        from view_test_result_sds as result
+        left join tbl_test_plan_sds as plan on plan.id = result.test_plan_id
+        <where>
+            and result.id!=''
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="testPlanId != null and testPlanId != ''">
+                and test_plan_id = #{testPlanId}
+            </if>
+            <if test="forward == 1">
+                and (result.forward+result.inversion)*1.25 &lt; 53
+            </if>
+            <if test="forward == 2">
+                and (result.forward+result.inversion)*1.25 >= 53
+            </if>
+        </where>
+    </select>
+    <select id="queryAllPlanSds" resultMap="ResultSdsMap">
+        select *
+        from view_test_result_sds
+    </select>
+    <select id="queryTesterById" resultMap="ResultSdsMap">
+        select *
+        from view_test_result_sds
+        where id = #{testerId}
+    </select>
+    <select id="queryByPhoneAndName" resultMap="ResultSdsMap">
+        select *
+        from view_test_result_sds
+        where phone = #{phone}
+          and name = #{name}
+    </select>
+    <select id="queryAllPlan" resultMap="ResultSdsMap">
+        select *
+        from tbl_test_plan_sds
+    </select>
+    <select id="queryById" resultMap="ResultSdsMap">
+        select *
+        from view_test_result_sds
+        where id = #{id}
+    </select>
+</mapper>
+

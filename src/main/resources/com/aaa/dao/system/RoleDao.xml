@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.system.RoleDao">
+
+    <resultMap type="com.aaa.entity.system.Role" id="RoleMap">
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="roleKey" column="role_key" jdbcType="VARCHAR"/>
+        <result property="roleSort" column="role_sort" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="save" keyProperty="roleId" useGeneratedKeys="true">
+        insert into tbl_role (role_name, role_key, status, remark, role_sort, create_by, create_time)
+        values (#{roleName}, #{roleKey}, #{status}, #{remark}, #{roleSort}, #{createBy}, #{createTime})
+    </insert>
+    <insert id="saveRoleMenu">
+        insert into tbl_role_menu (role_id, menu_id)
+        values (#{roleId}, #{menuId});
+    </insert>
+    <update id="update">
+        update tbl_role
+        <set>
+            <if test="roleName!=null and roleName!=''">
+                role_name = #{roleName},
+            </if>
+            <if test="roleName!=null and roleName!=''">
+                role_key = #{roleKey},
+            </if>
+            <if test="roleName!=null and roleName!=''">
+                role_sort = #{roleSort},
+            </if>
+            <if test="roleName!=null and roleName!=''">
+                status = #{status},
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark = #{remark},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+        </set>
+        where role_id = #{roleId};
+    </update>
+    <delete id="delete">
+        update tbl_role
+        set flag = '0'
+        where role_id = #{id}
+    </delete>
+    <delete id="deleteRoleMenu">
+        delete
+        from tbl_role_menu
+        where role_id = #{roleId}
+    </delete>
+
+    <select id="findAll" resultMap="RoleMap">
+        select *
+        from tbl_role
+        where flag = '1'
+    </select>
+    <select id="getAllMenu" resultMap="com.aaa.dao.system.UserinfoDao.menuResult">
+        select *
+        from tbl_menu
+    </select>
+    <select id="getSelectMenu" resultMap="com.aaa.dao.system.UserinfoDao.menuResult">
+        select menu_id
+        from tbl_role_menu
+        where role_id = #{roleId}
+          and menu_id not in (select distinct tm.parent_id
+                              from tbl_role_menu trm
+                                       inner join tbl_menu tm on trm.menu_id = tm.menu_id
+                              where role_id = #{roleId})
+    </select>
+    <select id="getAllByStatus" resultMap="RoleMap">
+        select *
+        from tbl_role
+        where flag='1' and status = '1'
+    </select>
+    <select id="repetitionName" resultMap="RoleMap">
+        select *
+        from tbl_role where role_name = #{roleName} and flag='1'
+    </select>
+    <select id="getById" resultMap="RoleMap">
+        select *
+        from tbl_role where role_id = #{roleId} and flag='1'
+    </select>
+</mapper>
+

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.sds.TestPlanSdsDao">
+
+    <resultMap type="com.aaa.entity.sds.TestPlanSds" id="TestPlanSdsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="testName" column="test_name" jdbcType="VARCHAR"/>
+        <result property="testCode" column="test_code" jdbcType="VARCHAR"/>
+        <result property="testBegin" column="test_begin" jdbcType="TIMESTAMP"/>
+        <result property="testEnd" column="test_end" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="flag" column="flag" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TestPlanSdsMap">
+        select
+          id, test_name, test_code, test_begin, test_end, create_time, create_by, update_time, update_by, remark
+        from tbl_test_plan_sds
+        where id = #{id} and flag = '1'
+    </select>
+
+    <select id="queryByAll" resultMap="TestPlanSdsMap">
+        select * from tbl_test_plan_sds where flag = 1
+        <if test="testName !=null and testName!=''">
+            and test_name like concat(concat('%',#{testName},'%'))
+        </if>
+        <if test="createBy !=null and createBy!=''">
+            and create_by like concat(concat('%',#{createBy},'%'))
+        </if>
+
+    </select>
+
+
+    <select id="queryByAllView" resultMap="TestPlanSdsMap">
+        select * from view_test_plan
+        <where>
+            <if test="testCode !=null and testCode!=''">
+                and test_code=#{testCode}
+            </if>
+
+        </where>
+    </select>
+
+    <!--查询重名-->
+    <select id="repetitionName" resultType="java.lang.Integer" parameterType="com.aaa.entity.sds.TestPlanSds">
+        select count(*) from tbl_test_plan_sds where flag = '1'
+        <if test="testName != null and testName != ''">
+            and test_name = #{testName}
+        </if>
+        <if test="id != null and id != ''">
+            and id !=#{id}
+        </if>
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_plan_sds(test_name, test_code, test_begin, test_end, create_time, create_by, update_time, update_by, remark)
+        values (#{testName}, #{testCode}, #{testBegin}, #{testEnd}, #{createTime}, #{createBy}, #{updateTime}, #{updateBy}, #{remark})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_plan_sds(test_name, test_code, test_begin, test_end, create_time, create_by, update_time, update_by, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.testName}, #{entity.testCode}, #{entity.testBegin}, #{entity.testEnd}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime}, #{entity.updateBy}, #{entity.remark})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_plan_sds(test_name, test_code, test_begin, test_end, create_time, create_by, update_time, update_by, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.testName}, #{entity.testCode}, #{entity.testBegin}, #{entity.testEnd}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime}, #{entity.updateBy}, #{entity.remark})
+        </foreach>
+        on duplicate key update
+        test_name = values(test_name),
+        test_code = values(test_code),
+        test_begin = values(test_begin),
+        test_end = values(test_end),
+        create_time = values(create_time),
+        create_by = values(create_by),
+        update_time = values(update_time),
+        update_by = values(update_by),
+        remark = values(remark),
+
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tbl_test_plan_sds
+        <set>
+            <if test="testName != null and testName != ''">
+                test_name = #{testName},
+            </if>
+            <if test="testCode != null">
+                test_code = #{testCode},
+            </if>
+            <if test="testBegin != null">
+                test_begin = #{testBegin},
+            </if>
+            <if test="testEnd != null">
+                test_end = #{testEnd},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update tbl_test_plan_sds set flag = 0 where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.front.TestPlanDao">
+
+    <resultMap type="com.aaa.entity.front.TestPlan" id="ViewTestPlanMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="testName" column="test_name" jdbcType="VARCHAR"/>
+        <result property="testCode" column="test_code" jdbcType="INTEGER"/>
+        <result property="testBegin" column="test_begin" jdbcType="TIMESTAMP"/>
+        <result property="testEnd" column="test_end" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="getTestPlanByTestCode" resultMap="ViewTestPlanMap">
+        select *
+        from view_test_plan
+        where
+        test_code = #{testCode}
+    </select>
+
+
+</mapper>
+

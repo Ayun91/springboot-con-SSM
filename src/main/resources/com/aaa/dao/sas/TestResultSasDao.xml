@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aaa.dao.sas.TestResultSasDao">
+
+    <resultMap type="com.aaa.entity.sas.TestResultSas" id="TestResultSasMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="testerId" column="tester_id" jdbcType="INTEGER"/>
+        <result property="questionId" column="question_id" jdbcType="INTEGER"/>
+        <result property="answer" column="answer" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TestResultSasMap">
+        select
+          id, tester_id, question_id, answer
+        from tbl_test_result_sas
+        where id = #{id}
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_result_sas(tester_id, question_id, answer)
+        values (#{testerId}, #{questionId}, #{answer})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_result_sas(tester_id, question_id, answer)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.testerId}, #{entity.questionId}, #{entity.answer})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tbl_test_result_sas(tester_id, question_id, answer)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.testerId}, #{entity.questionId}, #{entity.answer})
+        </foreach>
+        on duplicate key update
+        tester_id = values(tester_id),
+        question_id = values(question_id),
+        answer = values(answer)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tbl_test_result_sas
+        <set>
+            <if test="testerId != null">
+                tester_id = #{testerId},
+            </if>
+            <if test="questionId != null">
+                question_id = #{questionId},
+            </if>
+            <if test="answer != null and answer != ''">
+                answer = #{answer},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tbl_test_result_sas where id = #{id}
+    </delete>
+
+</mapper>
